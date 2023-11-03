@@ -22,6 +22,7 @@ import com.xpdustry.imperium.common.security.Identity
 import com.xpdustry.imperium.mindustry.adventure.IMPERIUM_AUDIENCE_PROVIDER
 import fr.xpdustry.distributor.api.util.MUUID
 import java.time.Instant
+import mindustry.gen.Call
 import mindustry.gen.Player
 import net.kyori.adventure.audience.Audience
 
@@ -33,3 +34,5 @@ val Player.joinTime: Instant
 
 val Player.audience: Audience
     get() = IMPERIUM_AUDIENCE_PROVIDER.player(MUUID.of(this))
+
+fun Player.showInfoMessage(message: String): Unit = Call.infoMessage(con, message)
