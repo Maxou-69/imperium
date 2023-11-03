@@ -30,6 +30,7 @@ dependencies {
     api(libs.adventure.serializer.ansi)
     api(libs.adventure.kotlin)
     api(libs.adventure.minimessage)
+    api(libs.adventure.slf4j)
 
     testApi(libs.slf4j.simple)
     testApi(libs.kotlinx.coroutines.test)

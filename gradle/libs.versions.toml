@@ -85,6 +85,7 @@ adventure-platform = { module = "net.kyori:adventure-platform-api", version.ref 
 adventure-kotlin = { module = "net.kyori:adventure-extra-kotlin", version.ref = "adventure-api" }
 adventure-serializer-ansi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "adventure-api" }
 adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-api" }
+adventure-slf4j = { module = "net.kyori:adventure-text-logger-slf4j", version.ref = "adventure-api" }
 
 # gradle plugins
 toxopid = { module = "fr.xpdustry:toxopid", version.ref = "toxopid" }
