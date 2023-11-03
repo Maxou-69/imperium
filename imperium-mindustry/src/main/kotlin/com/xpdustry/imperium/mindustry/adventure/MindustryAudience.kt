@@ -17,44 +17,68 @@
  */
 package com.xpdustry.imperium.mindustry.adventure
 
-import mindustry.gen.Call
+import com.google.common.collect.Iterables
+import java.util.function.Consumer
+import java.util.function.Predicate
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.ComponentLike
 
-fun Audience.sendInfoMessage(message: ComponentLike) = forEachAudience {
-    if (it is MindustryPlayerAudience) {
-        val renderer = MindustryComponentRenderer()
-        it.flattener.flatten(message.asComponent(), renderer)
-        Call.infoMessage(it.player.con, renderer.toString())
+interface MindustryAudience : Audience {
+
+    fun sendInfoMessage(message: ComponentLike) = Unit
+
+    fun showHUD(message: ComponentLike) = Unit
+
+    fun hideHUD() = Unit
+
+    fun sendAlert(message: ComponentLike) = Unit
+
+    fun sendToast(icon: Char, message: ComponentLike) = Unit
+
+    fun forEachMindustryAudience(action: Consumer<MindustryAudience>) {
+        action.accept(this)
+    }
+
+    fun filterMindustryAudience(filter: Predicate<MindustryAudience>): MindustryAudience {
+        return if (filter.test(this)) this else EMPTY
+    }
+
+    companion object {
+        val EMPTY: MindustryAudience = ForwardingMindustryAudience { emptyList() }
     }
 }
 
-fun Audience.showHUD(message: ComponentLike) = forEachAudience {
-    if (it is MindustryPlayerAudience) {
-        val renderer = MindustryComponentRenderer()
-        it.flattener.flatten(message.asComponent(), renderer)
-        Call.setHudTextReliable(it.player.con, renderer.toString())
-    }
-}
+internal fun interface ForwardingMindustryAudience : MindustryAudience, ForwardingAudience {
 
-fun Audience.hideHUD() = forEachAudience {
-    if (it is MindustryPlayerAudience) {
-        Call.hideHudText(it.player.con)
-    }
-}
+    override fun audiences(): Iterable<MindustryAudience>
 
-fun Audience.sendAnnouncement(message: ComponentLike) = forEachAudience {
-    if (it is MindustryPlayerAudience) {
-        val renderer = MindustryComponentRenderer()
-        it.flattener.flatten(message.asComponent(), renderer)
-        Call.announce(renderer.toString())
+    override fun sendInfoMessage(message: ComponentLike) {
+        for (audience in audiences()) audience.sendInfoMessage(message)
     }
-}
 
-fun Audience.sendWarningToast(icon: Char, message: ComponentLike) = forEachAudience {
-    if (it is MindustryPlayerAudience) {
-        val renderer = MindustryComponentRenderer()
-        it.flattener.flatten(message.asComponent(), renderer)
-        Call.warningToast(it.player.con, icon.code, renderer.toString())
+    override fun showHUD(message: ComponentLike) {
+        for (audience in audiences()) audience.showHUD(message)
     }
+
+    override fun hideHUD() {
+        for (audience in audiences()) audience.hideHUD()
+    }
+
+    override fun sendAlert(message: ComponentLike) {
+        for (audience in audiences()) audience.sendAlert(message)
+    }
+
+    override fun sendToast(icon: Char, message: ComponentLike) {
+        for (audience in audiences()) audience.sendToast(icon, message)
+    }
+
+    override fun forEachMindustryAudience(action: Consumer<MindustryAudience>) {
+        for (audience in audiences()) action.accept(audience)
+    }
+
+    override fun filterMindustryAudience(filter: Predicate<MindustryAudience>): MindustryAudience =
+        ForwardingMindustryAudience {
+            Iterables.filter(audiences(), filter::test)
+        }
 }

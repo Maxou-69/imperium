@@ -27,8 +27,6 @@ import fr.xpdustry.distributor.api.util.Tristate
 import java.util.UUID
 import kotlin.jvm.optionals.getOrDefault
 import mindustry.game.EventType
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.platform.AudienceProvider
 import net.kyori.adventure.text.flattener.ComponentFlattener
@@ -36,7 +34,21 @@ import net.kyori.adventure.text.flattener.ComponentFlattener
 internal lateinit var IMPERIUM_AUDIENCE_PROVIDER: MindustryAudienceProvider
 
 interface MindustryAudienceProvider : AudienceProvider {
-    fun player(playerId: MUUID): Audience = player(muuidToUuid(playerId.uuid))
+    fun player(playerId: MUUID): MindustryAudience = player(muuidToUuid(playerId.uuid))
+
+    override fun all(): MindustryAudience
+
+    override fun console(): MindustryAudience
+
+    override fun players(): MindustryAudience
+
+    override fun player(playerId: UUID): MindustryAudience
+
+    override fun permission(permission: String): MindustryAudience
+
+    override fun world(world: Key): MindustryAudience
+
+    override fun server(serverName: String): MindustryAudience
 }
 
 class SimpleMindustryAudienceProvider(private val flattener: ComponentFlattener) :
@@ -55,18 +67,17 @@ class SimpleMindustryAudienceProvider(private val flattener: ComponentFlattener)
         players.remove(muuidToUuid(event.player.uuid()))
     }
 
-    override fun close() = Unit
+    override fun all(): MindustryAudience = ForwardingMindustryAudience { players.values + console }
 
-    override fun all(): Audience = ForwardingAudience { players.values + console }
+    override fun console(): MindustryAudience = console
 
-    override fun console(): Audience = console
+    override fun players(): MindustryAudience = ForwardingMindustryAudience { players.values }
 
-    override fun players(): Audience = ForwardingAudience { players.values }
+    override fun player(playerId: UUID): MindustryAudience =
+        players[playerId] ?: MindustryAudience.EMPTY
 
-    override fun player(playerId: UUID): Audience = players[playerId] ?: Audience.empty()
-
-    override fun permission(permission: String): Audience =
-        players().filterAudience {
+    override fun permission(permission: String): MindustryAudience =
+        players().filterMindustryAudience {
             it.pointers()
                 .get(MUUID_POINTER)
                 .map { muuid ->
@@ -77,12 +88,14 @@ class SimpleMindustryAudienceProvider(private val flattener: ComponentFlattener)
                 .getOrDefault(false)
         }
 
-    override fun world(world: Key): Audience =
+    override fun world(world: Key): MindustryAudience =
         if (world.namespace() == "mindustry" && world.value() == "local") players()
-        else Audience.empty()
+        else MindustryAudience.EMPTY
 
-    override fun server(serverName: String): Audience =
-        if (serverName == "local") players() else Audience.empty()
+    override fun server(serverName: String): MindustryAudience =
+        if (serverName == "local") players() else MindustryAudience.EMPTY
 
     override fun flattener(): ComponentFlattener = flattener
+
+    override fun close() = Unit
 }

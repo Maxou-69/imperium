@@ -20,7 +20,7 @@ package com.xpdustry.imperium.mindustry.adventure
 import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.Style
 
-class MindustryComponentRenderer : FlattenerListener {
+internal class MindustryComponentRenderer : FlattenerListener {
     private val builder = StringBuilder()
 
     override fun pushStyle(style: Style) {
@@ -32,9 +32,7 @@ class MindustryComponentRenderer : FlattenerListener {
     }
 
     override fun popStyle(style: Style) {
-        if (style.color() != null) {
-            builder.append("[]")
-        }
+        if (style.color() != null) builder.append("[]")
     }
 
     override fun toString(): String = builder.toString()

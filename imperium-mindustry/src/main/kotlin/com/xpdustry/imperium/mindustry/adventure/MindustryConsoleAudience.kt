@@ -18,7 +18,6 @@
 package com.xpdustry.imperium.mindustry.adventure
 
 import arc.util.Log
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.MessageType
 import net.kyori.adventure.identity.Identity
 import net.kyori.adventure.text.Component
@@ -26,7 +25,7 @@ import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer
 import net.kyori.ansi.ColorLevel
 
-class MindustryConsoleAudience(flattener: ComponentFlattener) : Audience {
+class MindustryConsoleAudience(flattener: ComponentFlattener) : MindustryAudience {
     private val renderer =
         ANSIComponentSerializer.builder()
             .flattener(flattener)

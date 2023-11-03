@@ -27,7 +27,6 @@ import mindustry.game.Team
 import mindustry.gen.Call
 import mindustry.gen.Player
 import mindustry.gen.Sounds
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.MessageType
 import net.kyori.adventure.identity.Identity
 import net.kyori.adventure.key.Key
@@ -35,15 +34,16 @@ import net.kyori.adventure.pointer.Pointer
 import net.kyori.adventure.pointer.Pointers
 import net.kyori.adventure.sound.Sound as AdventureSound
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.flattener.ComponentFlattener
 
 val MUUID_POINTER = Pointer.pointer(MUUID::class.java, Key.key("distributor", "muuid"))
 val TEAM_POINTER = Pointer.pointer(Team::class.java, Key.key("mindustry", "team"))
 
 class MindustryPlayerAudience(
-    internal val player: Player,
-    internal val flattener: ComponentFlattener
-) : Audience {
+    private val player: Player,
+    private val flattener: ComponentFlattener
+) : MindustryAudience {
     private val pointers: Pointers =
         Pointers.builder()
             .withStatic(MUUID_POINTER, MUUID.of(player))
@@ -59,12 +59,6 @@ class MindustryPlayerAudience(
         val renderer = MindustryComponentRenderer()
         flattener.flatten(message, renderer)
         player.sendMessage(renderer.toString())
-    }
-
-    override fun sendActionBar(message: Component) {
-        val renderer = MindustryComponentRenderer()
-        flattener.flatten(message, renderer)
-        Call.setHudTextReliable(player.con, renderer.toString())
     }
 
     override fun playSound(sound: AdventureSound, emitter: AdventureSound.Emitter) {
@@ -84,6 +78,34 @@ class MindustryPlayerAudience(
     }
 
     override fun pointers(): Pointers = pointers
+
+    override fun sendInfoMessage(message: ComponentLike) {
+        val renderer = MindustryComponentRenderer()
+        flattener.flatten(message.asComponent(), renderer)
+        Call.infoMessage(player.con, renderer.toString())
+    }
+
+    override fun showHUD(message: ComponentLike) {
+        val renderer = MindustryComponentRenderer()
+        flattener.flatten(message.asComponent(), renderer)
+        Call.setHudTextReliable(player.con, renderer.toString())
+    }
+
+    override fun hideHUD() {
+        Call.hideHudText(player.con)
+    }
+
+    override fun sendAlert(message: ComponentLike) {
+        val renderer = MindustryComponentRenderer()
+        flattener.flatten(message.asComponent(), renderer)
+        Call.announce(renderer.toString())
+    }
+
+    override fun sendToast(icon: Char, message: ComponentLike) {
+        val renderer = MindustryComponentRenderer()
+        flattener.flatten(message.asComponent(), renderer)
+        Call.warningToast(player.con, icon.code, renderer.toString())
+    }
 
     companion object {
         private val SOUND_LOOKUP = buildMap {
