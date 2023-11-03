@@ -28,6 +28,7 @@ import com.xpdustry.imperium.common.config.ImperiumConfig
 import com.xpdustry.imperium.common.inject.get
 import com.xpdustry.imperium.mindustry.account.AccountCommand
 import com.xpdustry.imperium.mindustry.account.AccountListener
+import com.xpdustry.imperium.mindustry.adventure.IMPERIUM_AUDIENCE_PROVIDER
 import com.xpdustry.imperium.mindustry.chat.BridgeChatMessageListener
 import com.xpdustry.imperium.mindustry.chat.ChatMessageListener
 import com.xpdustry.imperium.mindustry.chat.ChatTranslatorListener
@@ -50,8 +51,12 @@ import com.xpdustry.imperium.mindustry.world.RockTheVoteCommand
 import fr.xpdustry.distributor.api.DistributorProvider
 import fr.xpdustry.distributor.api.localization.LocalizationSourceRegistry
 import fr.xpdustry.distributor.api.plugin.AbstractMindustryPlugin
+import java.text.MessageFormat
 import java.util.Locale
 import kotlin.system.exitProcess
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.translation.GlobalTranslator
+import net.kyori.adventure.translation.Translator
 
 class ImperiumPlugin : AbstractMindustryPlugin() {
     private val application = MindustryImperiumApplication(this)
@@ -74,8 +79,19 @@ class ImperiumPlugin : AbstractMindustryPlugin() {
             this::class.java.classLoader,
         )
         DistributorProvider.get().globalLocalizationSource.addLocalizationSource(source)
+        // For adventure
+        GlobalTranslator.translator()
+            .addSource(
+                object : Translator {
+                    override fun name(): Key = Key.key("distributor", "global-localization-source")
+
+                    override fun translate(key: String, locale: Locale): MessageFormat? =
+                        DistributorProvider.get().globalLocalizationSource.localize(key, locale)
+                })
 
         application.instances.createSingletons()
+        IMPERIUM_AUDIENCE_PROVIDER = application.instances.get()
+
         for (listener in
             listOf(
                 ConventionListener::class,

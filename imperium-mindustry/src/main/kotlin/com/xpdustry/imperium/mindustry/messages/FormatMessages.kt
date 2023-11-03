@@ -15,21 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.imperium.mindustry.misc
+package com.xpdustry.imperium.mindustry.messages
 
-import com.xpdustry.imperium.common.misc.toInetAddress
-import com.xpdustry.imperium.common.security.Identity
-import com.xpdustry.imperium.mindustry.adventure.IMPERIUM_AUDIENCE_PROVIDER
-import fr.xpdustry.distributor.api.util.MUUID
-import java.time.Instant
-import mindustry.gen.Player
-import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
 
-val Player.identity: Identity.Mindustry
-    get() = Identity.Mindustry(info.plainLastName(), uuid(), usid(), con.address.toInetAddress())
+fun interface Format0 {
+    fun format(): Component
+}
 
-val Player.joinTime: Instant
-    get() = Instant.ofEpochMilli(con.connectTime)
+fun interface Format1<A0> {
+    fun format(arg0: A0): Component
+}
 
-val Player.audience: Audience
-    get() = IMPERIUM_AUDIENCE_PROVIDER.player(MUUID.of(this))
+fun interface Format2<A0, A1> {
+    fun format(arg0: A0, arg1: A1): Component
+}

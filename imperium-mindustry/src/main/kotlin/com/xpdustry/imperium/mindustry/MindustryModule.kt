@@ -28,6 +28,8 @@ import com.xpdustry.imperium.common.inject.single
 import com.xpdustry.imperium.common.misc.toInetAddress
 import com.xpdustry.imperium.common.network.MindustryServerInfo
 import com.xpdustry.imperium.common.version.MindustryVersion
+import com.xpdustry.imperium.mindustry.adventure.MindustryAudienceProvider
+import com.xpdustry.imperium.mindustry.adventure.SimpleMindustryAudienceProvider
 import com.xpdustry.imperium.mindustry.chat.ChatMessagePipeline
 import com.xpdustry.imperium.mindustry.chat.SimpleChatMessagePipeline
 import com.xpdustry.imperium.mindustry.command.MindustryCommandRegistry
@@ -46,6 +48,7 @@ import mindustry.Vars
 import mindustry.core.Version
 import mindustry.game.Gamemode
 import mindustry.net.Administration
+import net.kyori.adventure.text.flattener.ComponentFlattener
 
 fun mindustryModule(plugin: ImperiumPlugin) =
     module("mindustry") {
@@ -74,6 +77,10 @@ fun mindustryModule(plugin: ImperiumPlugin) =
         }
 
         single<CommandRegistry> { MindustryCommandRegistry(get(), get(), get()) }
+
+        single<MindustryAudienceProvider> {
+            SimpleMindustryAudienceProvider(ComponentFlattener.basic())
+        }
     }
 
 private fun getMindustryServerInfo(config: ImperiumConfig): MindustryServerInfo? {

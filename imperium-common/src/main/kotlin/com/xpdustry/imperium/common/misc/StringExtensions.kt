@@ -36,3 +36,16 @@ fun String.toInetAddress(): InetAddress = InetAddresses.forString(this)
 fun ByteArray.encodeBase64(): String = Base64.getEncoder().encodeToString(this)
 
 fun String.decodeBase64(): ByteArray = Base64.getDecoder().decode(this)
+
+fun String.camelToKebabCase(): String {
+    val builder = StringBuilder()
+    forEach {
+        if (it.isUpperCase()) {
+            builder.append('-')
+            builder.append(it.lowercase())
+        } else {
+            builder.append(it)
+        }
+    }
+    return builder.toString()
+}

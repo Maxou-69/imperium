@@ -15,21 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.xpdustry.imperium.mindustry.misc
+package com.xpdustry.imperium.mindustry.adventure
 
-import com.xpdustry.imperium.common.misc.toInetAddress
-import com.xpdustry.imperium.common.security.Identity
-import com.xpdustry.imperium.mindustry.adventure.IMPERIUM_AUDIENCE_PROVIDER
-import fr.xpdustry.distributor.api.util.MUUID
-import java.time.Instant
-import mindustry.gen.Player
-import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.flattener.FlattenerListener
+import net.kyori.adventure.text.format.Style
 
-val Player.identity: Identity.Mindustry
-    get() = Identity.Mindustry(info.plainLastName(), uuid(), usid(), con.address.toInetAddress())
+class MindustryComponentRenderer : FlattenerListener {
+    private val builder = StringBuilder()
 
-val Player.joinTime: Instant
-    get() = Instant.ofEpochMilli(con.connectTime)
+    override fun pushStyle(style: Style) {
+        style.color()?.asHexString()?.let { builder.append("[$it]") }
+    }
 
-val Player.audience: Audience
-    get() = IMPERIUM_AUDIENCE_PROVIDER.player(MUUID.of(this))
+    override fun component(text: String) {
+        builder.append(text.replace("[", "[["))
+    }
+
+    override fun popStyle(style: Style) {
+        if (style.color() != null) {
+            builder.append("[]")
+        }
+    }
+
+    override fun toString(): String = builder.toString()
+}

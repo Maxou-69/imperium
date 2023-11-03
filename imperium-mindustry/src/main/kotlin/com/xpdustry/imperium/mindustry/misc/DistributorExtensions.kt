@@ -20,9 +20,12 @@ package com.xpdustry.imperium.mindustry.misc
 import arc.struct.ObjectMap
 import arc.struct.ObjectSet
 import arc.struct.Seq
+import com.xpdustry.imperium.mindustry.adventure.IMPERIUM_AUDIENCE_PROVIDER
+import fr.xpdustry.distributor.api.command.sender.CommandSender
 import fr.xpdustry.distributor.api.util.ArcCollections
 import mindustry.entities.EntityGroup
 import mindustry.gen.Entityc
+import net.kyori.adventure.audience.Audience
 
 fun <T> Seq<T>.toList(): List<T> = ArcCollections.immutableList(this)
 
@@ -31,3 +34,6 @@ fun <T : Entityc> EntityGroup<T>.toList(): List<T> = ArcCollections.immutableLis
 fun <K, V> ObjectMap<K, V>.toMap(): Map<K, V> = ArcCollections.immutableMap(this)
 
 fun <T> ObjectSet<T>.toSet(): Set<T> = ArcCollections.immutableSet(this)
+
+val CommandSender.audience: Audience
+    get() = if (isPlayer) player.audience else IMPERIUM_AUDIENCE_PROVIDER.console()

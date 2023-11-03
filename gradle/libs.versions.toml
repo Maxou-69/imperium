@@ -33,6 +33,8 @@ okhttp = "4.11.0"
 okio = "3.6.0"
 classgraph = "4.8.162"
 logback = "1.4.11"
+adventure-api = "4.14.0"
+adventure-platform = "4.3.1"
 
 # gradle plugins
 toxopid = "3.2.0"
@@ -78,6 +80,11 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
+adventure-platform = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform" }
+adventure-kotlin = { module = "net.kyori:adventure-extra-kotlin", version.ref = "adventure-api" }
+adventure-serializer-ansi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "adventure-api" }
+adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-api" }
 
 # gradle plugins
 toxopid = { module = "fr.xpdustry:toxopid", version.ref = "toxopid" }

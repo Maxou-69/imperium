@@ -25,6 +25,12 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     api(libs.mongodb.bson.kotlinx)
 
+    api(libs.adventure.api)
+    api(libs.adventure.platform)
+    api(libs.adventure.serializer.ansi)
+    api(libs.adventure.kotlin)
+    api(libs.adventure.minimessage)
+
     testApi(libs.slf4j.simple)
     testApi(libs.kotlinx.coroutines.test)
     testApi(libs.kotlinx.serialization.json)
